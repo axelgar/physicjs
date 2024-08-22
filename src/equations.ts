@@ -1,8 +1,7 @@
-import { Matrix } from "mathjs";
-import { Shape } from "./Shape";
-import { Vector } from "./Vector";
-import { STATE_SIZE } from "./constants";
-import { Quaternion } from "./Quaternion";
+import { Body } from './Body';
+import { Vector } from './Vector';
+import { STATE_SIZE } from './constants';
+import { Quaternion } from './Quaternion';
 
 /**
  * Cross product between two vectors, returns a new vector that is orthogonal (perpendicular) to both vectorA and vectorB.
@@ -26,21 +25,13 @@ export function crossProduct(vectorA: Vector, vectorB: Vector) {
  * @param vectorB
  * @returns Vector
  */
-export const addTwoVectors = (vectorA: Vector, vectorB: Vector) => {
-  return new Vector(
-    vectorA.x + vectorB.x,
-    vectorA.y + vectorB.y,
-    vectorA.z + vectorB.z
-  );
-};
+export function addTwoVectors(vectorA: Vector, vectorB: Vector) {
+  return new Vector(vectorA.x + vectorB.x, vectorA.y + vectorB.y, vectorA.z + vectorB.z);
+}
 
-export const subtractTwoVectors = (vectorA: Vector, vectorB: Vector) => {
-  return new Vector(
-    vectorA.x - vectorB.x,
-    vectorA.y - vectorB.y,
-    vectorA.z - vectorB.z
-  );
-};
+export function subtractTwoVectors(vectorA: Vector, vectorB: Vector) {
+  return new Vector(vectorA.x - vectorB.x, vectorA.y - vectorB.y, vectorA.z - vectorB.z);
+}
 
 export function multiplyVectorByScalar(scalar: number, vector: Vector) {
   return new Vector(vector.x * scalar, vector.y * scalar, vector.z * scalar);
@@ -56,22 +47,7 @@ export function computeForce(mass: number, acceleration: Vector) {
   return multiplyVectorByScalar(mass, acceleration);
 }
 
-export function multiplyMatrixAndVector(matrix: Matrix, vector: Vector) {
-  const tmp = matrix.map((row) =>
-    row.reduce(
-      (sum: number, value: number, index: number) =>
-        sum + value * vector.toArray()[index],
-      0
-    )
-  );
-  console.log({ tmp });
-  return new Vector(tmp.get([0, 0]), tmp.get([0, 1]), tmp.get([0, 2]));
-}
-
-export function multiplyTwoQuaternions(
-  quaternionA: Quaternion,
-  quaternionB: Quaternion
-) {
+export function multiplyTwoQuaternions(quaternionA: Quaternion, quaternionB: Quaternion) {
   return new Quaternion(
     quaternionA.r * quaternionB.k +
       quaternionA.k * quaternionB.r +
@@ -92,56 +68,68 @@ export function multiplyTwoQuaternions(
   );
 }
 
-function matrixToQuaternion(m: Matrix) {
-  let q = { r: 0, i: 0, j: 0, k: 0 };
-  let tr = m.get([0, 0]) + m.get([1, 1]) + m.get([2, 2]);
-  let s;
-
-  if (tr >= 0) {
-    s = Math.sqrt(tr + 1);
-    q.r = 0.5 * s;
-    s = 0.5 / s;
-    q.i = (m.get([2, 1]) - m.get([1, 2])) * s;
-    q.j = (m.get([0, 2]) - m.get([2, 0])) * s;
-    q.k = (m.get([1, 0]) - m.get([0, 1])) * s;
-  } else {
-    let i = 0;
-    if (m.get([1, 1]) > m.get([0, 0])) i = 1;
-    if (m.get([2, 2]) > m.get([i, i])) i = 2;
-
-    switch (i) {
-      case 0:
-        s = Math.sqrt(m.get([0, 0]) - (m.get([1, 1]) + m.get([2, 2])) + 1);
-        q.i = 0.5 * s;
-        s = 0.5 / s;
-        q.j = (m.get([0, 1]) + m.get([1, 0])) * s;
-        q.k = (m.get([2, 0]) + m.get([0, 2])) * s;
-        q.r = (m.get([2, 1]) - m.get([1, 2])) * s;
-        break;
-      case 1:
-        s = Math.sqrt(m.get([1, 1]) - (m.get([2, 2]) + m.get([0, 0])) + 1);
-        q.j = 0.5 * s;
-        s = 0.5 / s;
-        q.k = (m.get([1, 2]) + m.get([2, 1])) * s;
-        q.i = (m.get([0, 1]) + m.get([1, 0])) * s;
-        q.r = (m.get([0, 2]) - m.get([2, 0])) * s;
-        break;
-      case 2:
-        s = Math.sqrt(m.get([2, 2]) - (m.get([0, 0]) + m.get([1, 1])) + 1);
-        q.k = 0.5 * s;
-        s = 0.5 / s;
-        q.i = (m.get([2, 0]) + m.get([0, 2])) * s;
-        q.j = (m.get([1, 2]) + m.get([2, 1])) * s;
-        q.r = (m.get([1, 0]) - m.get([0, 1])) * s;
-        break;
-    }
-  }
-
-  return new Quaternion(q.r, q.i, q.j, q.k);
-}
-
-export function updatesShapesFromArray(y: number[], shapes: Shape[]): void {
+export function updatesShapesFromArray(y: number[], shapes: Body[]): void {
   for (let i = 0; i < shapes.length; i++) {
     shapes[i].fromArray(y.slice(i * STATE_SIZE, (i + 1) * STATE_SIZE));
+  }
+}
+
+/**
+ * The RK4 method is a commonly used technique to solve ODEs numerically.
+ * The basic idea is to approximate the solution by evaluating the derivative
+ * at several points within the time step and then taking a weighted average.
+ * @param y0 Initial state array
+ * @param yfinal Final state array to be updated
+ * @param size Size of the state array
+ * @param t Current time
+ * @param tNext Next time point
+ * @param dydt Function to compute the derivative
+ */
+export function ode(
+  y0: number[],
+  yfinal: number[],
+  size: number,
+  t: number,
+  tNext: number,
+  dydt: (t: number, y: number[], ydot: number[]) => void
+): void {
+  const dt = tNext - t; // Time step
+
+  const k1 = new Array(size).fill(0);
+  const k2 = new Array(size).fill(0);
+  const k3 = new Array(size).fill(0);
+  const k4 = new Array(size).fill(0);
+  const tempState = new Array(size).fill(0);
+
+  // k1 = dt * f(t, y)
+  dydt(t, y0, k1);
+  for (let i = 0; i < size; i++) {
+    k1[i] *= dt;
+    tempState[i] = y0[i] + 0.5 * k1[i];
+  }
+
+  // k2 = dt * f(t + dt/2, y + k1/2)
+  dydt(t + dt / 2, tempState, k2);
+  for (let i = 0; i < size; i++) {
+    k2[i] *= dt;
+    tempState[i] = y0[i] + 0.5 * k2[i];
+  }
+
+  // k3 = dt * f(t + dt/2, y + k2/2)
+  dydt(t + dt / 2, tempState, k3);
+  for (let i = 0; i < size; i++) {
+    k3[i] *= dt;
+    tempState[i] = y0[i] + k3[i];
+  }
+
+  // k4 = dt * f(t + dt, y + k3)
+  dydt(t + dt, tempState, k4);
+  for (let i = 0; i < size; i++) {
+    k4[i] *= dt;
+  }
+
+  // Update yfinal with the weighted sum of the slopes
+  for (let i = 0; i < size; i++) {
+    yfinal[i] = y0[i] + (k1[i] + 2 * k2[i] + 2 * k3[i] + k4[i]) / 6;
   }
 }

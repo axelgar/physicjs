@@ -10,9 +10,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^5.5.4"
+    "@types/three": "^0.167.2",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.2"
   },
   "dependencies": {
-    "mathjs": "^13.0.3"
+    "mathjs": "^13.0.3",
+    "three": "^0.167.1"
   }
 }

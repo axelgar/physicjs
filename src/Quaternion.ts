@@ -43,15 +43,8 @@ export class Quaternion {
   }
 
   public getNormalized() {
-    const magnitude = Math.sqrt(
-      this.r ** 2 + this.i ** 2 + this.j ** 2 + this.k ** 2
-    );
+    const magnitude = Math.sqrt(this.r ** 2 + this.i ** 2 + this.j ** 2 + this.k ** 2);
     const normalized = this.toArray().map((value) => value / magnitude);
-    return new Quaternion(
-      normalized[0],
-      normalized[1],
-      normalized[2],
-      normalized[3]
-    );
+    return new Quaternion(normalized[0], normalized[1], normalized[2], normalized[3]);
   }
 }
