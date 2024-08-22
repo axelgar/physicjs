@@ -1,4 +1,4 @@
-import { norm } from "mathjs";
+import { norm } from 'mathjs';
 
 export class Vector {
   x: number;
@@ -9,6 +9,10 @@ export class Vector {
     this.x = x;
     this.y = y;
     this.z = z;
+  }
+
+  static fromArray(array: [number, number, number]) {
+    return new Vector(...array);
   }
 
   public getLength() {
