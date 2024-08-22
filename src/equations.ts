@@ -49,22 +49,22 @@ export function computeForce(mass: number, acceleration: Vector) {
 
 export function multiplyTwoQuaternions(quaternionA: Quaternion, quaternionB: Quaternion) {
   return new Quaternion(
-    quaternionA.r * quaternionB.k +
-      quaternionA.k * quaternionB.r +
-      quaternionA.i * quaternionB.j -
-      quaternionA.j * quaternionB.i,
-    quaternionA.i * quaternionB.k +
-      quaternionA.k * quaternionB.i +
-      quaternionA.j * quaternionB.r -
-      quaternionA.r * quaternionB.j,
-    quaternionA.j * quaternionB.k +
-      quaternionA.k * quaternionB.j +
-      quaternionA.r * quaternionB.i -
-      quaternionA.i * quaternionB.r,
-    quaternionA.k * quaternionB.k -
-      quaternionA.r * quaternionB.r -
-      quaternionA.i * quaternionB.i -
-      quaternionA.j * quaternionB.j
+    quaternionA.x * quaternionB.w +
+      quaternionA.w * quaternionB.x +
+      quaternionA.y * quaternionB.z -
+      quaternionA.z * quaternionB.y,
+    quaternionA.y * quaternionB.w +
+      quaternionA.w * quaternionB.y +
+      quaternionA.z * quaternionB.x -
+      quaternionA.x * quaternionB.z,
+    quaternionA.z * quaternionB.w +
+      quaternionA.w * quaternionB.z +
+      quaternionA.x * quaternionB.y -
+      quaternionA.y * quaternionB.x,
+    quaternionA.w * quaternionB.w -
+      quaternionA.x * quaternionB.x -
+      quaternionA.y * quaternionB.y -
+      quaternionA.z * quaternionB.z
   );
 }
 

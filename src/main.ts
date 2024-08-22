@@ -62,42 +62,4 @@ function animate() {
   t++;
 }
 
-window.addEventListener('keydown', (event) => {
-  if (event.key === 'ArrowRight') {
-    console.log('ArrowRight pressed');
-    bodies[0].force.x = 1;
-  }
-
-  if (event.key === 'ArrowLeft') {
-    console.log('ArrowLeft pressed');
-    bodies[0].force.x = -1;
-  }
-
-  if (event.key === 'ArrowUp') {
-    console.log('ArrowUp pressed');
-    bodies[0].force.y = 1;
-  }
-
-  if (event.key === 'ArrowDown') {
-    console.log('ArrowDown pressed');
-    bodies[0].force.y = -1;
-  }
-
-  if (event.key === 'w') {
-    bodies[0].torque.z = -1;
-  }
-
-  if (event.key === 's') {
-    bodies[0].torque.z = -1;
-  }
-
-  if (event.key === 'a') {
-    bodies[0].torque.x = -1;
-  }
-
-  if (event.key === 'd') {
-    bodies[0].torque.x = -1;
-  }
-});
-
 renderer.setAnimationLoop(animate);

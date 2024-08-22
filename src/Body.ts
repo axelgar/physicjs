@@ -78,12 +78,8 @@ export abstract class Body {
     const oneDimensionMatrix = flatten(multiply(this.Iinv, this.L.toArray()));
     this.omega = Vector.fromArray(oneDimensionMatrix.toArray() as [number, number, number]);
 
-    this.shape.rotation.x = this.omega.x;
-    this.shape.rotation.y = this.omega.y;
-    this.shape.rotation.z = this.omega.z;
-    this.shape.position.x = this.x.x;
-    this.shape.position.y = this.x.y;
-    this.shape.position.z = this.x.z;
+    this.shape.position.copy(this.x);
+    this.shape.quaternion.copy(this.q);
   }
 
   toArray() {
@@ -93,10 +89,10 @@ export abstract class Body {
     array.push(this.x.y);
     array.push(this.x.z);
 
-    array.push(this.q.r);
-    array.push(this.q.i);
-    array.push(this.q.j);
-    array.push(this.q.k);
+    array.push(this.q.x);
+    array.push(this.q.y);
+    array.push(this.q.z);
+    array.push(this.q.w);
 
     array.push(this.P.x);
     array.push(this.P.y);
@@ -116,10 +112,14 @@ export abstract class Body {
     this.x.y = array[index++];
     this.x.z = array[index++];
 
-    this.q.r = array[index++];
-    this.q.i = array[index++];
-    this.q.j = array[index++];
-    this.q.k = array[index++];
+    const qr = array[index++];
+    const qi = array[index++];
+    const qj = array[index++];
+    const qk = array[index++];
+    this.q.x = !Number.isFinite(qr) ? this.q.x : qr;
+    this.q.y = !Number.isFinite(qi) ? this.q.y : qi;
+    this.q.z = !Number.isFinite(qj) ? this.q.z : qj;
+    this.q.w = !Number.isFinite(qk) ? this.q.w : qk;
 
     this.P.x = array[index++];
     this.P.y = array[index++];
@@ -143,10 +143,10 @@ export abstract class Body {
     const qDot = multiplyTwoQuaternions(new Quaternion(0, ...this.omega.toArray()), this.q);
     qDot.multiply(0.5);
 
-    ydot.push(qDot.r);
-    ydot.push(qDot.i);
-    ydot.push(qDot.j);
-    ydot.push(qDot.k);
+    ydot.push(qDot.x);
+    ydot.push(qDot.y);
+    ydot.push(qDot.z);
+    ydot.push(qDot.w);
 
     // Copy d/dt P(t) = F(t) into ydot
     ydot.push(this.force.x);

@@ -1,49 +1,49 @@
 export class Quaternion {
-  r: number;
-  i: number;
-  j: number;
-  k: number;
+  x: number;
+  y: number;
+  z: number;
+  w: number;
 
-  constructor(r: number, i: number, j: number, k: number) {
-    this.r = r;
-    this.i = i;
-    this.j = j;
-    this.k = k;
+  constructor(x: number, y: number, z: number, w: number) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
   }
 
   public multiply(scalar: number) {
-    this.r = this.r * scalar;
-    this.i = this.i * scalar;
-    this.j = this.j * scalar;
-    this.k = this.k * scalar;
+    this.x = this.x * scalar;
+    this.y = this.y * scalar;
+    this.z = this.z * scalar;
+    this.w = this.w * scalar;
   }
 
   public toArray(): [number, number, number, number] {
-    return [this.r, this.i, this.j, this.k];
+    return [this.x, this.y, this.z, this.w];
   }
 
   public toMatrix() {
     return [
       [
-        1 - 2 * (this.i * this.i + this.j * this.j),
-        2 * (this.r * this.i - this.j * this.k),
-        2 * (this.r * this.j + this.i * this.k),
+        1 - 2 * (this.y * this.y + this.z * this.z),
+        2 * (this.x * this.y - this.z * this.w),
+        2 * (this.x * this.z + this.y * this.w),
       ],
       [
-        2 * (this.r * this.i + this.j * this.k),
-        1 - 2 * (this.r * this.r + this.j * this.j),
-        2 * (this.i * this.j - this.r * this.k),
+        2 * (this.x * this.y + this.z * this.w),
+        1 - 2 * (this.x * this.x + this.z * this.z),
+        2 * (this.y * this.z - this.x * this.w),
       ],
       [
-        2 * (this.r * this.j - this.i * this.k),
-        2 * (this.i * this.j + this.r * this.k),
-        1 - 2 * (this.r * this.r + this.i * this.i),
+        2 * (this.x * this.z - this.y * this.w),
+        2 * (this.y * this.z + this.x * this.w),
+        1 - 2 * (this.x * this.x + this.y * this.y),
       ],
     ];
   }
 
   public getNormalized() {
-    const magnitude = Math.sqrt(this.r ** 2 + this.i ** 2 + this.j ** 2 + this.k ** 2);
+    const magnitude = Math.sqrt(this.x ** 2 + this.y ** 2 + this.z ** 2 + this.w ** 2);
     const normalized = this.toArray().map((value) => value / magnitude);
     return new Quaternion(normalized[0], normalized[1], normalized[2], normalized[3]);
   }

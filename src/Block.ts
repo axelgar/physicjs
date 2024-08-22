@@ -47,8 +47,8 @@ export class Block extends Body {
     this.force.y = -this.v.y * 0.1; // Example damping force
     this.force.z = -this.v.z * 0.1; // Example damping force
 
-    // this.torque.x = this.Ibody.get([0, 0]) * this.omega.x;
-    // this.torque.y = this.Ibody.get([1, 1]) * this.omega.y;
-    // this.torque.z = this.Ibody.get([2, 2]) * this.omega.z;
+    this.torque.x = this.Ibody.get([0, 0]) * this.omega.x;
+    this.torque.y = this.Ibody.get([1, 1]) * this.omega.y;
+    this.torque.z = this.Ibody.get([2, 2]) * this.omega.z;
   }
 }
